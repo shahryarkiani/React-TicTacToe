@@ -1,13 +1,38 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.board-row:after {
+    clear: both;
+    content: "";
+    display: table;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.status {
+    margin-bottom: 10px;
+    font-size: 10vmin;
 }
+
+.square {
+    justify-content: center;
+    margin: auto;
+    padding: 0;/* This is needed for IOS Safari, because it adds padding to buttons, which messes up the centering */
+    background: #fff;
+    width: 28vmin;
+    height: 28vmin;
+    border: 2px solid black;
+    border-radius: 8px;
+    font-size: 12vmin;
+    vertical-align: top;
+}
+
+
+.game {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-board {
+    width: 90vmin;
+    height: 90vmin;
+}
+
+
