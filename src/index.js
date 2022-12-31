@@ -46,6 +46,13 @@ function Board() {
     }
 
     const handleMessage = (msg) => {
+        if(msg === 'RESET') {
+            console.log('RESETTING')
+            setSquares(Array(9).fill(null))
+            setXIsNext(true)
+            return
+        }
+
         const player = msg.charAt(0)
         const pos = parseInt(msg.charAt(1))
 

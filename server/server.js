@@ -26,11 +26,8 @@ function Game(p1, p2) {
 
 let latestGame = new Game(undefined, undefined, true)
 
-wss.on('connection', (ws) => {
 
-    ws.game = undefined
-
-
+function addToGame(ws) {
     if (latestGame.p1 === undefined) {
         console.log('Creating new game')
         ws.game = new Game(ws, undefined)
@@ -41,6 +38,14 @@ wss.on('connection', (ws) => {
         console.log('Game filled, Creating new')
         latestGame = new Game(undefined, undefined, true)
     }
+}
+
+wss.on('connection', (ws) => {
+
+    ws.game = undefined
+
+
+    addToGame(ws)
 
     ws.on('message', (data) => {
         console.log(data.toString())
@@ -53,11 +58,41 @@ wss.on('connection', (ws) => {
             ws.send(data.toString())
             ws.game.xTurn = !ws.game.xTurn
         } else if (ws.game.p2 === ws && !ws.game.xTurn) {
+            if(ws.game.p1 === undefined)
+                return
             ws.game.p1.send(data.toString())
             ws.send(data.toString())
             ws.game.xTurn = !ws.game.xTurn
         } else {
             console.log('Illegal Move')
+        }
+    })
+
+    ws.on('close', () => {
+
+        if(ws.game.p1 === ws)
+        {
+            console.log('P1 LEFT')
+            if(ws.game.p2 === undefined)
+                ws.game.p1 = undefined
+            else{
+                console.log('MOVING P2 OVER')
+                addToGame(ws.game.p2)
+                ws.game.p2.send('RESET')
+                ws.game = null
+            }
+        }
+        else
+        {
+            if(ws.game.p1 === undefined)
+            {
+                ws.game.p2 = undefined
+            }
+            else{
+                addToGame(ws.game.p1)
+                ws.game.p1.send('RESET')
+                ws.game = null
+            }
         }
     })
 
