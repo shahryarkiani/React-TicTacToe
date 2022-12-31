@@ -1,7 +1,9 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 
+
+const ws = new WebSocket('ws://' + window.location.hostname + ':8000')
 
 function Square(props) {
     return (
@@ -16,6 +18,13 @@ function Board() {
     const [squares, setSquares] = useState(Array(9).fill(null))
     const [xIsNext, setXIsNext] = useState(true)
 
+    useEffect(() => {
+        ws.onmessage = (e) => {
+            console.log(e.data.toString())
+            handleMessage(e.data.toString())
+        }
+    })
+
     const renderSquare = (i) => {
         return (
             <Square
@@ -29,10 +38,21 @@ function Board() {
         //Check if there's a winner or if this square is already taken
         if (calculateWinner(squares) || squares[i])
             return
+
+        const move = xIsNext ? 'X' : 'O'
+
+        console.log(move + i.toString())
+        ws.send(move + i.toString())
+    }
+
+    const handleMessage = (msg) => {
+        const player = msg.charAt(0)
+        const pos = parseInt(msg.charAt(1))
+
         const newSquares = squares.slice()
-        newSquares[i] = xIsNext ? 'X' : 'O'
+        newSquares[pos] = player
         setSquares(newSquares)
-        setXIsNext(!xIsNext)
+        setXIsNext(player !== 'X')
     }
 
     const winner = calculateWinner(squares)
